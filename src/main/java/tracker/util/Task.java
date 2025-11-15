@@ -61,4 +61,14 @@ public class Task {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
+    public String toJSON() {
+        return "{" +
+                "\"id\":\"" + uuid + "\"," +
+                "\"description\":\"" + description + "\"," +
+                "\"status\":\"" + status + "\"," +
+                "\"createdAt\":\"" + createdAt + "\"," +
+                "\"updatedAt\":\"" + updatedAt + "\"" +
+                "}";
+    }
 }
