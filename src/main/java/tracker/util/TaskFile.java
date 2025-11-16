@@ -62,6 +62,22 @@ public class TaskFile {
     }
 
     public String MaptoJSON(Map<Integer, Task> tasks) {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        for (Task task : tasks.values()) {
+            sb.append(task.toJSON()).append("\r\n");
+        }
+        return sb.toString();
+    }
+
+    public void save(Map<Integer, Task> tasks) {
+        try {
+            Writer w = getWriter();
+            String jsonString = MaptoJSON(tasks);
+            w.write(jsonString);
+            w.flush();
+            this.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

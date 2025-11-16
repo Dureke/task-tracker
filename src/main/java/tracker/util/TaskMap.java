@@ -9,9 +9,47 @@ public class TaskMap {
     // TODO: add methods to manipulate the task list
 
     private Map<Integer, Task> currentTasks;
+    private TaskFile taskFile;
 
     public TaskMap(String fileName) {
-        this.currentTasks = null;
+        this.taskFile = new TaskFile(fileName);
+        this.currentTasks = taskFile.JSONtoMap();
+    }
+
+    public Map<Integer, Task> getCurrentTasks() {
+        return currentTasks;
+    }
+
+    public TaskFile getTaskFile() {
+        return taskFile;
+    }
+
+    public void addTask(Task task) {
+        currentTasks.put(task.getId(), task);
+    }
+
+    public void removeTask(int id) {
+        currentTasks.remove(id);
+    }
+
+    public void updateTask(Task task) {
+        currentTasks.put(task.getId(), task);
+    }
+
+    public void markTaskAsDone(int id) {
+        Task task = currentTasks.get(id);
+        if (task != null) {
+            task.setStatus(Status.DONE);
+            currentTasks.put(id, task);
+        }
+    }
+
+    public void markTaskAsInProgress(int id) {
+        Task task = currentTasks.get(id);
+        if (task != null) {
+            task.setStatus(Status.IN_PROGRESS);
+            currentTasks.put(id, task);
+        }
     }
 
     public static Map<Integer, Task> fromJSON(String json) {

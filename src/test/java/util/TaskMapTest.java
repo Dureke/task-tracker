@@ -1,8 +1,12 @@
 package util;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -13,6 +17,16 @@ import tracker.util.Status;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskMapTest {
+
+    @BeforeAll
+    static void setupOnce() {
+        String filePath = "src/test/resources/input/tasks.json";
+        try {
+            Files.writeString(Paths.get(filePath), "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     void testFromJSON() {
@@ -45,6 +59,41 @@ class TaskMapTest {
         Map<Integer, Task> taskMap = TaskMap.fromJSON(json);
 
         assertEquals(0, taskMap.size());
+    }
+
+    @Test
+    void testGetCurrentTasksEmpty() {
+        TaskMap taskMap = new TaskMap("src/test/resources/input/tasks.json");
+        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
+        Assertions.assertEquals(0, currentTasks.size());
+    }
+
+    @Test
+    void testGetCurrentTasks() {
+        TaskMap taskMap = new TaskMap("src/test/resources/input/tasks.json");
+        Task task1 = new Task("Task 1");
+        Task task2 = new Task("Task 2");
+        taskMap.addTask(task1);
+        taskMap.addTask(task2);
+        taskMap.markTaskAsInProgress(task2.getId());
+        taskMap.getTaskFile().save(taskMap.getCurrentTasks()); // Assuming save method is implemented
+        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
+        Assertions.assertEquals(2, currentTasks.size());
+        Assertions.assertTrue(currentTasks.containsKey(task1.getId()));
+        Assertions.assertTrue(currentTasks.containsKey(task2.getId()));
+    }
+
+    @Test
+    void testGetCurrentTasksFromFile() {
+        TaskMap taskMap = new TaskMap("src/test/resources/input/tasks.json");
+        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
+        Assertions.assertEquals(2, currentTasks.size());
+        Task task1 = currentTasks.get(1);
+        Assertions.assertEquals("Task 1", task1.getDescription());
+        Assertions.assertEquals(Status.TODO, task1.getStatus());
+        Task task2 = currentTasks.get(2);
+        Assertions.assertEquals("Task 2", task2.getDescription());
+        Assertions.assertEquals(Status.IN_PROGRESS, task2.getStatus());
     }
 
     @Test
