@@ -1,4 +1,5 @@
 target/
+resources/
 
 # Compiled class file
 *.class

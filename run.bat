@@ -1,1 +1,1 @@
-mvn exec:java -Dexec.mainClass="tracker.Main"
+mvn exec:java -Dexec.mainClass="tracker.Main" -Dexec.args="add Task"
