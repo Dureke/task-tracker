@@ -30,6 +30,10 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
+    public static void resetIdCounter() {
+        idCounter = 1;
+    }
+
     public int getId() {
         return this.uuid;
     }

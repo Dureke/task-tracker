@@ -21,6 +21,7 @@ class TaskMapTest {
     @BeforeAll
     static void setupOnce() {
         String filePath = "src/test/resources/input/tasks.json";
+        Task.resetIdCounter();
         try {
             Files.writeString(Paths.get(filePath), "");
         } catch (IOException e) {
