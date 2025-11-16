@@ -1,17 +1,17 @@
 package tracker.util;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Task {
-    private String uuid;
+    private int uuid;
     private String description;
     private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private static int idCounter = 1;
 
     public Task() {
-        this.uuid = UUID.randomUUID().toString();
+        this.uuid = idCounter++;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -22,7 +22,15 @@ public class Task {
         this.status = Status.TODO;
     }
 
-    public String getId() {
+    public Task(int uuid, String description, Status status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.uuid = uuid;
+        this.description = description;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public int getId() {
         return this.uuid;
     }
 
