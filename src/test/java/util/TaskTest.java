@@ -3,9 +3,12 @@ package util;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import tracker.util.Status;
 import tracker.util.Task;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 class TaskTest {
@@ -54,23 +57,30 @@ class TaskTest {
     @Test
     void testGetCreatedAt() {
         Task task = new Task("Test Task Description");
-        assertEquals(LocalDateTime.now(), task.getCreatedAt());
+        Duration diff = Duration.between(task.getCreatedAt(), LocalDateTime.now()).abs();
+        assertTrue(diff.toMillis() < 1000);
 
         Task task2 = new Task(4, "Another Task", Status.TODO, LocalDateTime.now(), LocalDateTime.now());
-        assertEquals(LocalDateTime.now(), task2.getCreatedAt());
+        diff = Duration.between(task2.getCreatedAt(), LocalDateTime.now()).abs();
+        assertTrue(diff.toMillis() < 1000);
     }
 
     @Test
     void testGetUpdatedAt() {
         Task task = new Task("Test Task Description");
-        assertEquals(LocalDateTime.now(), task.getUpdatedAt());
+        Duration diff = Duration.between(task.getUpdatedAt(), LocalDateTime.now()).abs();
+        assertTrue(diff.toMillis() < 1000);
 
         task.setStatus(Status.DONE);
-        assertEquals(LocalDateTime.now(), task.getUpdatedAt());
+        diff = Duration.between(task.getUpdatedAt(), LocalDateTime.now()).abs();
+        assertTrue(diff.toMillis() < 1000);
 
         Task task2 = new Task(4, "Another Task", Status.TODO, LocalDateTime.now(), LocalDateTime.now());
-        assertEquals(LocalDateTime.now(), task2.getUpdatedAt());
+        diff = Duration.between(task2.getUpdatedAt(), LocalDateTime.now()).abs();
+        assertTrue(diff.toMillis() < 1000);
+
         task2.setDescription("Updated Description");
-        assertEquals(LocalDateTime.now(), task2.getUpdatedAt());
+        diff = Duration.between(task2.getUpdatedAt(), LocalDateTime.now()).abs();
+        assertTrue(diff.toMillis() < 1000);
     }
 }

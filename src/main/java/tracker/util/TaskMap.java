@@ -25,6 +25,9 @@ public class TaskMap {
     }
 
     public void addTask(Task task) {
+        if (task.getDescription() == null || task.getDescription().trim().isEmpty()) {
+            return; // Do not add tasks with empty descriptions
+        }
         currentTasks.put(task.getId(), task);
     }
 

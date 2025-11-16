@@ -5,6 +5,10 @@ public enum Commands {
         @Override
         public void execute(String fileName, String description, String a) {
             System.out.println("Executing ADD command on file: " + fileName);
+            Task task = new Task(description);
+            TaskMap taskMap = new TaskMap(fileName);
+            taskMap.addTask(task);
+            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     UPDATE {
