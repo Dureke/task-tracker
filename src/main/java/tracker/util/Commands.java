@@ -24,6 +24,10 @@ public enum Commands {
         @Override
         public void execute(String fileName, String id, String a) {
             System.out.println("Executing DELETE command on file: " + fileName);
+            TaskMap taskMap = new TaskMap(fileName);
+
+            taskMap.removeTask(id);
+            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     MARK_IN_PROGRESS {

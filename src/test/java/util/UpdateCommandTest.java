@@ -62,6 +62,16 @@ public class UpdateCommandTest {
     }
 
     @Test
+    void testUpdateWithInvalidId() {
+        String updatedDescription = "Updated Task";
+
+        Commands.UPDATE.execute(TEST_FILE_PATH, "invalid_id", updatedDescription);
+
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        assertTrue(taskMap.getCurrentTasks().isEmpty());
+    }
+
+    @Test
     void testUpdateWithMultipleEntries() {
         String desc1 = "Task 1";
         String desc2 = "Task 2";

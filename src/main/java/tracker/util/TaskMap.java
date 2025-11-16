@@ -31,31 +31,41 @@ public class TaskMap {
         currentTasks.put(task.getId(), task);
     }
 
-    public void removeTask(int id) {
-        currentTasks.remove(id);
+    public void removeTask(String id) {
+        if (isValidId(id)) {
+            currentTasks.remove(Integer.parseInt(id));
+        }
     }
 
     public void updateTask(String id, String newDescription) {
-        Task task = currentTasks.get(Integer.parseInt(id));
-        if (task != null) {
-            task.setDescription(newDescription);
-            currentTasks.put(task.getId(), task);
+        if (isValidId(id)) {
+            Task task = currentTasks.get(Integer.parseInt(id));
+            if (task != null) {
+                task.setDescription(newDescription);
+                currentTasks.put(task.getId(), task);
+            }
         }
+        
     }
 
-    public void markTaskAsDone(int id) {
-        Task task = currentTasks.get(id);
-        if (task != null) {
-            task.setStatus(Status.DONE);
-            currentTasks.put(id, task);
+    public void markTaskAsDone(String id) {
+        if (isValidId(id)) {
+            Task task = currentTasks.get(Integer.parseInt(id));
+            if (task != null) {
+                task.setStatus(Status.DONE);
+                currentTasks.put(task.getId(), task);
+            }
         }
+        
     }
 
-    public void markTaskAsInProgress(int id) {
-        Task task = currentTasks.get(id);
-        if (task != null) {
-            task.setStatus(Status.IN_PROGRESS);
-            currentTasks.put(id, task);
+    public void markTaskAsInProgress(String id) {
+        if (isValidId(id)) {
+            Task task = currentTasks.get(Integer.parseInt(id));
+            if (task != null) {
+                task.setStatus(Status.IN_PROGRESS);
+                currentTasks.put(task.getId(), task);
+            }
         }
     }
 
@@ -92,5 +102,15 @@ public class TaskMap {
             taskMap.put(task.getId(), task);
         }
         return taskMap;
+    }
+
+    private boolean isValidId(String id) {
+        try {
+            Integer.parseInt(id);
+            return true;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid task ID: " + id);
+            return false;
+        }
     }
 }

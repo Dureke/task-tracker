@@ -76,7 +76,7 @@ class TaskMapTest {
         Task task2 = new Task("Task 2");
         taskMap.addTask(task1);
         taskMap.addTask(task2);
-        taskMap.markTaskAsInProgress(task2.getId());
+        taskMap.markTaskAsInProgress(String.valueOf(task2.getId()));
         taskMap.getTaskFile().save(taskMap.getCurrentTasks()); // Assuming save method is implemented
         Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
         Assertions.assertEquals(2, currentTasks.size());
