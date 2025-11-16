@@ -35,8 +35,12 @@ public class TaskMap {
         currentTasks.remove(id);
     }
 
-    public void updateTask(Task task) {
-        currentTasks.put(task.getId(), task);
+    public void updateTask(String id, String newDescription) {
+        Task task = currentTasks.get(Integer.parseInt(id));
+        if (task != null) {
+            task.setDescription(newDescription);
+            currentTasks.put(task.getId(), task);
+        }
     }
 
     public void markTaskAsDone(int id) {

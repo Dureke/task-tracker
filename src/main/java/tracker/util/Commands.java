@@ -15,6 +15,9 @@ public enum Commands {
         @Override
         public void execute(String fileName, String id, String newDescription) {
             System.out.println("Executing UPDATE command on file: " + fileName);
+            TaskMap taskMap = new TaskMap(fileName);
+            taskMap.updateTask(id, newDescription);
+            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     DELETE {

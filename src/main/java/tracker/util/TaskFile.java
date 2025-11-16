@@ -30,7 +30,7 @@ public class TaskFile {
 
     private Writer getWriter() throws Exception {
         if (writer == null) {
-            writer = new java.io.FileWriter(path, true);
+            writer = new java.io.FileWriter(path, false);
         }
         return writer;
     }
