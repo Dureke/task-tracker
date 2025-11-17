@@ -3,6 +3,7 @@ package util;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,13 +30,19 @@ public class DeleteCommandTest {
     @Test
     void testDeleteCommand() {
         String taskDescription = "Task to be deleted";
-
-        // Add a task first
+        TaskMap tempMap = new TaskMap(TEST_FILE_PATH);
+        Map<Integer, Task> tempTasks = tempMap.getCurrentTasks();
+        System.out.println("Current Tasks before deletion: " + tempTasks);
         Commands.ADD.execute(TEST_FILE_PATH, taskDescription, null);
-        // Now delete the task
+
+        TaskMap tempMap2 = new TaskMap(TEST_FILE_PATH);
+        tempTasks = tempMap2.getCurrentTasks();
+        System.out.println("Current Tasks after addition: " + tempTasks);
         Commands.DELETE.execute(TEST_FILE_PATH, "1", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
+        System.out.println("Current Tasks after deletion: " + currentTasks);
         assertTrue(taskMap.getCurrentTasks().isEmpty());
     }
 
@@ -43,17 +50,15 @@ public class DeleteCommandTest {
     void testDeleteNonExistentTask() {
         String taskDescription = "Task to be deleted";
 
-        // Add a task first
         Commands.ADD.execute(TEST_FILE_PATH, taskDescription, null);
-        // Now delete the task
         Commands.DELETE.execute(TEST_FILE_PATH, "999", null);
+
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
         assertTrue(taskMap.getCurrentTasks().size() == 1);
     }
 
     @Test
     void testDeleteFromEmptyFile() {
-        // Attempt to delete a task from an empty file
         Commands.DELETE.execute(TEST_FILE_PATH, "1", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
@@ -64,9 +69,7 @@ public class DeleteCommandTest {
     void testDeleteWithInvalidId() {
         String taskDescription = "Task to be deleted";
 
-        // Add a task first
         Commands.ADD.execute(TEST_FILE_PATH, taskDescription, null);
-        // Now delete the task with invalid id
         Commands.DELETE.execute(TEST_FILE_PATH, "invalid_id", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
@@ -75,12 +78,10 @@ public class DeleteCommandTest {
 
     @Test
     void testDeleteFromListOfTasks() {
-        // Add multiple tasks
         Commands.ADD.execute(TEST_FILE_PATH, "Task 1", null);
         Commands.ADD.execute(TEST_FILE_PATH, "Task 2", null);
         Commands.ADD.execute(TEST_FILE_PATH, "Task 3", null);
 
-        // Delete the second task
         Commands.DELETE.execute(TEST_FILE_PATH, "2", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);

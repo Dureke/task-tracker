@@ -43,6 +43,9 @@ public enum Commands {
         @Override
         public void execute(String fileName, String id, String a) {
             System.out.println("Executing MARK_DONE command on file: " + fileName);
+            TaskMap taskMap = new TaskMap(fileName);
+            taskMap.markTaskAsDone(id);
+            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     LIST {
