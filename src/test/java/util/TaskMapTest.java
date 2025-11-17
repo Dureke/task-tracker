@@ -1,7 +1,7 @@
 package util;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TaskMapTest {
 
-    @BeforeAll
-    static void setupOnce() {
+    @BeforeEach
+    void setup() {
         String filePath = "src/test/resources/input/tasks.json";
         Task.resetIdCounter();
         try {
@@ -77,7 +77,7 @@ class TaskMapTest {
         taskMap.addTask(task1);
         taskMap.addTask(task2);
         taskMap.markTaskAsInProgress(String.valueOf(task2.getId()));
-        taskMap.getTaskFile().save(taskMap.getCurrentTasks()); // Assuming save method is implemented
+        taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
         Assertions.assertEquals(2, currentTasks.size());
         Assertions.assertTrue(currentTasks.containsKey(task1.getId()));
@@ -87,14 +87,22 @@ class TaskMapTest {
     @Test
     void testGetCurrentTasksFromFile() {
         TaskMap taskMap = new TaskMap("src/test/resources/input/tasks.json");
-        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
+        Task task1 = new Task("Task 1");
+        Task task2 = new Task("Task 2");
+        taskMap.addTask(task1);
+        taskMap.addTask(task2);
+        taskMap.markTaskAsInProgress(String.valueOf(task2.getId()));
+        taskMap.getTaskFile().save(taskMap.getCurrentTasks());
+
+        TaskMap newTaskMap = new TaskMap("src/test/resources/input/tasks.json");
+        Map<Integer, Task> currentTasks = newTaskMap.getCurrentTasks();
         Assertions.assertEquals(2, currentTasks.size());
-        Task task1 = currentTasks.get(1);
-        Assertions.assertEquals("Task 1", task1.getDescription());
-        Assertions.assertEquals(Status.TODO, task1.getStatus());
-        Task task2 = currentTasks.get(2);
-        Assertions.assertEquals("Task 2", task2.getDescription());
-        Assertions.assertEquals(Status.IN_PROGRESS, task2.getStatus());
+        Task grabbedTask1 = currentTasks.get(1);
+        Assertions.assertEquals("Task 1", grabbedTask1.getDescription());
+        Assertions.assertEquals(Status.TODO, grabbedTask1.getStatus());
+        Task grabbedTask2 = currentTasks.get(2);
+        Assertions.assertEquals("Task 2", grabbedTask2.getDescription());
+        Assertions.assertEquals(Status.IN_PROGRESS, grabbedTask2.getStatus());
     }
 
     @Test
@@ -106,5 +114,34 @@ class TaskMapTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             TaskMap.fromJSON(json + "{\"id\":4,\"description\":\"Task 4\",\"status\":\"INVALID\",\"createdAt\":\"2022-01-04T00:00:00\",\"updatedAt\":\"2022-01-04T00:00:00\"}");
         });
+    }
+
+    @Test
+    void testFileUpdatesCorrectly() {
+        String filePath = "src/test/resources/input/tasks.json";
+        TaskMap taskMap = new TaskMap(filePath);
+        Task task = new Task("Test Task");
+        taskMap.addTask(task);
+        taskMap.getTaskFile().save(taskMap.getCurrentTasks());
+
+        TaskMap newTaskMap = new TaskMap(filePath);
+        Map<Integer, Task> currentTasks = newTaskMap.getCurrentTasks();
+        Assertions.assertEquals(1, currentTasks.size());
+        Task savedTask = currentTasks.get(task.getId());
+        Assertions.assertNotNull(savedTask);
+        Assertions.assertEquals("Test Task", savedTask.getDescription());
+        Assertions.assertEquals(Status.TODO, savedTask.getStatus());
+        Task newTask = new Task("Another Task");
+        newTaskMap.addTask(newTask);
+        newTaskMap.getTaskFile().save(newTaskMap.getCurrentTasks());
+
+        TaskMap updatedTaskMap = new TaskMap(filePath);
+        Map<Integer, Task> updatedTasks = updatedTaskMap.getCurrentTasks();
+        Assertions.assertEquals(2, updatedTasks.size());
+        Task updatedTask = updatedTasks.get(newTask.getId());
+        Assertions.assertNotNull(updatedTask);
+        Assertions.assertEquals("Another Task", updatedTask.getDescription());
+        Assertions.assertEquals(Status.TODO, updatedTask.getStatus());
+
     }
 }

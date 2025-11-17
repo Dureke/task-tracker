@@ -13,7 +13,7 @@ public class Main {
             return;
         }
         
-        final Commands COMMAND;
+        final Commands COMMAND = Commands.fromString(args[0].toUpperCase());
         final String FILE_NAME = "src/main/resources/tasks.json";
         final String ARG_1 = args.length > 1 ? args[1] : null;
         final String ARG_2 = args.length > 2 ? args[2] : null;
@@ -23,7 +23,6 @@ public class Main {
                 Files.createFile(Paths.get(FILE_NAME));
             }
 
-            COMMAND = Commands.valueOf(args[0].toUpperCase());
             COMMAND.execute(FILE_NAME, ARG_1, ARG_2);
         } catch (IllegalArgumentException e) {
             System.out.println("Usage: java -jar task-tracker.jar <task description>");

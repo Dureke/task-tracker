@@ -34,6 +34,9 @@ public enum Commands {
         @Override
         public void execute(String fileName, String id, String a) {
             System.out.println("Executing MARK_IN_PROGRESS command on file: " + fileName);
+            TaskMap taskMap = new TaskMap(fileName);
+            taskMap.markTaskAsInProgress(id);
+            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     MARK_DONE {
@@ -64,5 +67,19 @@ public enum Commands {
 
     public String getCommand() {
         return command;
+    }
+
+    public static Commands fromString(String input) {
+        if (input == null) {
+            throw new IllegalArgumentException("Command cannot be null.");
+        }
+
+        // normalize user input
+        String normalized = input
+                .trim()
+                .toUpperCase()
+                .replace("-", "_");
+
+        return Commands.valueOf(normalized);
     }
 }
