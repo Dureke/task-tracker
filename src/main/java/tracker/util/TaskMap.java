@@ -3,6 +3,8 @@ package tracker.util;
 import java.util.HashMap;
 import java.util.Map;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaskMap {
     // Manages the in-memory representation of tasks
@@ -67,6 +69,20 @@ public class TaskMap {
                 currentTasks.put(task.getId(), task);
             }
         }
+    }
+
+    public List<Task> listTasksByStatus(Status status) {
+        List<Task> filteredTasks = new ArrayList<>();
+        for (Task task : currentTasks.values()) {
+            if (task.getStatus() == status) {
+                filteredTasks.add(task);
+            }
+        }
+        return filteredTasks;
+    }
+
+    public List<Task> listAllTasks() {
+        return new ArrayList<>(currentTasks.values());
     }
 
     public static Map<Integer, Task> fromJSON(String json) {

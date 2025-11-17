@@ -12,16 +12,16 @@ public class Task {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private static int idCounter = retrieveIdCounter();
-    private static String idCounterFile = "src/main/resources/id_counter.txt";
+    private final static String ID_COUNTER_FILE = "src/main/resources/id_counter.txt";
 
     static private int retrieveIdCounter() {
         try {
-            if (!Files.exists(Paths.get(idCounterFile))) {
-                Files.createFile(Paths.get(idCounterFile));
-                Files.writeString(Paths.get(idCounterFile), "0");
+            if (!Files.exists(Paths.get(ID_COUNTER_FILE))) {
+                Files.createFile(Paths.get(ID_COUNTER_FILE));
+                Files.writeString(Paths.get(ID_COUNTER_FILE), "0");
                 return 1;
             }
-            return Integer.parseInt(Files.readString(Paths.get(idCounterFile)));
+            return Integer.parseInt(Files.readString(Paths.get(ID_COUNTER_FILE)));
         } catch (IOException e) {
             System.out.println("Failed to read id_counter.txt file: " + e.getMessage());
         }
@@ -30,7 +30,7 @@ public class Task {
 
     static private void saveIdCounter(int counter) {
         try {
-            Files.writeString(Paths.get(idCounterFile), Integer.toString(counter));
+            Files.writeString(Paths.get(ID_COUNTER_FILE), Integer.toString(counter));
         } catch (IOException e) {
             System.out.println("Failed to write to id_counter.txt file: " + e.getMessage());
         }
@@ -40,7 +40,7 @@ public class Task {
         int currentID = retrieveIdCounter();
         int newCounter = currentID + 1;
         try {
-            Files.writeString(Paths.get(idCounterFile), Integer.toString(newCounter));
+            Files.writeString(Paths.get(ID_COUNTER_FILE), Integer.toString(newCounter));
         } catch (IOException e) {
             System.out.println("Failed to write to id_counter.txt file: " + e.getMessage());
         }

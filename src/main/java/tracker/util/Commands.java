@@ -51,13 +51,24 @@ public enum Commands {
     LIST {
         @Override
         public void execute(String fileName, String status, String a) {
-            Status listStatus = status != null ? Status.valueOf(status.toUpperCase()) : null;
+            Status listStatus;
+            try {
+                listStatus = status != null ? Status.valueOf(status.toUpperCase().replace("-", "_")) : null;
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid status value: " + status, e);
+            }
+
+            System.out.println("Executing LIST command on file: " + fileName);
             if (listStatus != null) {
                 System.out.println("Executing LIST command for status " + listStatus + " on file: " + fileName);
+                TaskMap taskMap = new TaskMap(fileName);
+                taskMap.listTasksByStatus(listStatus).forEach(System.out::println);
             } else {
                 System.out.println("Executing LIST command for all statuses on file: " + fileName);
+                TaskMap taskMap = new TaskMap(fileName);
+                taskMap.listAllTasks().forEach(System.out::println);
             }
-            System.out.println("Executing LIST command on file: " + fileName);
+            
         }
     };
 
