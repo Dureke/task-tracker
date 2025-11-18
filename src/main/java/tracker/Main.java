@@ -3,6 +3,7 @@ package tracker;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import tracker.util.Commands;
 
@@ -22,8 +23,17 @@ public class Main {
             if (!Files.exists(Paths.get(FILE_NAME))) {
                 Files.createFile(Paths.get(FILE_NAME));
             }
+            if (COMMAND == Commands.ADD) {
+                String description = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                COMMAND.execute(FILE_NAME, description, ARG_2);
+            } else if (COMMAND == Commands.UPDATE) {
+                String description = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+                COMMAND.execute(FILE_NAME, ARG_1, description);
+            }
+            else {
+                COMMAND.execute(FILE_NAME, ARG_1, ARG_2);
+            }
 
-            COMMAND.execute(FILE_NAME, ARG_1, ARG_2);
         } catch (IllegalArgumentException e) {
             System.out.println("Usage: java -jar task-tracker.jar <task description>");
             return;
