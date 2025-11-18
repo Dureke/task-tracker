@@ -1,6 +1,6 @@
 package util;
 
-import org.junit.jupiter.api.Assertions;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,20 +10,25 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import tracker.util.Commands;
+import tracker.util.Status;
 import tracker.util.Task;
 import tracker.util.TaskMap;
-import tracker.util.Status;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 class TaskMapTest {
+    static final String TEST_FILE_PATH = "src/test/resources/input/tasks.json";
 
     @BeforeEach
     void setup() {
-        String filePath = "src/test/resources/input/tasks.json";
         Task.resetIdCounter();
         try {
-            Files.writeString(Paths.get(filePath), "");
+            Files.writeString(Paths.get(TEST_FILE_PATH), "");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,52 +62,45 @@ class TaskMapTest {
     void testFromJSONEmpty() {
         String json = "{}";
 
-        Map<Integer, Task> taskMap = TaskMap.fromJSON(json);
-
-        assertEquals(0, taskMap.size());
+        assertEquals(0, TaskMap.fromJSON(json).size());
     }
 
     @Test
     void testGetCurrentTasksEmpty() {
-        TaskMap taskMap = new TaskMap("src/test/resources/input/tasks.json");
-        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
-        Assertions.assertEquals(0, currentTasks.size());
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        assertEquals(0, taskMap.getCurrentTasks().size());
     }
 
     @Test
     void testGetCurrentTasks() {
-        TaskMap taskMap = new TaskMap("src/test/resources/input/tasks.json");
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        taskMap.addTask(task1);
-        taskMap.addTask(task2);
-        taskMap.markTaskAsInProgress(String.valueOf(task2.getId()));
-        taskMap.getTaskFile().save(taskMap.getCurrentTasks());
+        Commands.ADD.execute(TEST_FILE_PATH, "Task 1", null);
+        Commands.ADD.execute(TEST_FILE_PATH, "Task 2", null);
+        Commands.MARK_IN_PROGRESS.execute(TEST_FILE_PATH, "2", null);
+        
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
         Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
-        Assertions.assertEquals(2, currentTasks.size());
-        Assertions.assertTrue(currentTasks.containsKey(task1.getId()));
-        Assertions.assertTrue(currentTasks.containsKey(task2.getId()));
+        assertEquals(2, currentTasks.size());
+        assertTrue(currentTasks.containsKey(1));
+        assertTrue(currentTasks.containsKey(2));
     }
 
     @Test
     void testGetCurrentTasksFromFile() {
-        TaskMap taskMap = new TaskMap("src/test/resources/input/tasks.json");
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        taskMap.addTask(task1);
-        taskMap.addTask(task2);
-        taskMap.markTaskAsInProgress(String.valueOf(task2.getId()));
-        taskMap.getTaskFile().save(taskMap.getCurrentTasks());
+        Commands.ADD.execute(TEST_FILE_PATH, "Task 1", null);
+        Commands.ADD.execute(TEST_FILE_PATH, "Task 2", null);
+        Commands.MARK_IN_PROGRESS.execute(TEST_FILE_PATH, "2", null);
 
-        TaskMap newTaskMap = new TaskMap("src/test/resources/input/tasks.json");
-        Map<Integer, Task> currentTasks = newTaskMap.getCurrentTasks();
-        Assertions.assertEquals(2, currentTasks.size());
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
+        assertEquals(2, currentTasks.size());
+
         Task grabbedTask1 = currentTasks.get(1);
-        Assertions.assertEquals("Task 1", grabbedTask1.getDescription());
-        Assertions.assertEquals(Status.TODO, grabbedTask1.getStatus());
+        assertEquals("Task 1", grabbedTask1.getDescription());
+        assertEquals(Status.TODO, grabbedTask1.getStatus());
+
         Task grabbedTask2 = currentTasks.get(2);
-        Assertions.assertEquals("Task 2", grabbedTask2.getDescription());
-        Assertions.assertEquals(Status.IN_PROGRESS, grabbedTask2.getStatus());
+        assertEquals("Task 2", grabbedTask2.getDescription());
+        assertEquals(Status.IN_PROGRESS, grabbedTask2.getStatus());
     }
 
     @Test
@@ -111,37 +109,33 @@ class TaskMapTest {
             "{\"id\":2,\"description\":\"Task 2\",\"status\":\"IN_PROGRESS\",\"createdAt\":\"2022-01-02T00:00:00\",\"updatedAt\":\"2022-01-02T00:00:00\"}\r\n" + //
             "{\"id\":3,\"description\":\"Task 3\",\"status\":\"DONE\",\"createdAt\":\"2022-01-03T00:00:00\",\"updatedAt\":\"2022-01-03T00:00:00\"}\r\n";
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             TaskMap.fromJSON(json + "{\"id\":4,\"description\":\"Task 4\",\"status\":\"INVALID\",\"createdAt\":\"2022-01-04T00:00:00\",\"updatedAt\":\"2022-01-04T00:00:00\"}");
         });
     }
 
     @Test
     void testFileUpdatesCorrectly() {
-        String filePath = "src/test/resources/input/tasks.json";
-        TaskMap taskMap = new TaskMap(filePath);
-        Task task = new Task("Test Task");
-        taskMap.addTask(task);
-        taskMap.getTaskFile().save(taskMap.getCurrentTasks());
+        Commands.ADD.execute(TEST_FILE_PATH, "Test Task", null);
 
-        TaskMap newTaskMap = new TaskMap(filePath);
-        Map<Integer, Task> currentTasks = newTaskMap.getCurrentTasks();
-        Assertions.assertEquals(1, currentTasks.size());
-        Task savedTask = currentTasks.get(task.getId());
-        Assertions.assertNotNull(savedTask);
-        Assertions.assertEquals("Test Task", savedTask.getDescription());
-        Assertions.assertEquals(Status.TODO, savedTask.getStatus());
-        Task newTask = new Task("Another Task");
-        newTaskMap.addTask(newTask);
-        newTaskMap.getTaskFile().save(newTaskMap.getCurrentTasks());
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
+        Task savedTask = currentTasks.get(1);
 
-        TaskMap updatedTaskMap = new TaskMap(filePath);
-        Map<Integer, Task> updatedTasks = updatedTaskMap.getCurrentTasks();
-        Assertions.assertEquals(2, updatedTasks.size());
-        Task updatedTask = updatedTasks.get(newTask.getId());
-        Assertions.assertNotNull(updatedTask);
-        Assertions.assertEquals("Another Task", updatedTask.getDescription());
-        Assertions.assertEquals(Status.TODO, updatedTask.getStatus());
+        assertEquals(1, currentTasks.size());
+        assertNotNull(savedTask);
+        assertEquals("Test Task", savedTask.getDescription());
+        assertEquals(Status.TODO, savedTask.getStatus());
 
+        Commands.ADD.execute(TEST_FILE_PATH, "Another Task", null);
+        
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        Map<Integer, Task> updatedTasks = taskMap.getCurrentTasks();
+        Task updatedTask = updatedTasks.get(2);
+
+        assertEquals(2, updatedTasks.size());
+        assertNotNull(updatedTask);
+        assertEquals("Another Task", updatedTask.getDescription());
+        assertEquals(Status.TODO, updatedTask.getStatus());
     }
 }

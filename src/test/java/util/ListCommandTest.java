@@ -1,32 +1,33 @@
 package util;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
-import tracker.util.Task;
-import tracker.util.TaskMap;
 import tracker.util.Commands;
 import tracker.util.Status;
+import tracker.util.Task;
+import tracker.util.TaskMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 public class ListCommandTest {
+    static final String TEST_FILE_PATH = "src/test/resources/input/tasks.json";
+
     @BeforeEach
     void setup() {
-        String filePath = "src/test/resources/input/tasks.json";
         Task.resetIdCounter();
         try {
-            Files.writeString(Paths.get(filePath), "");
+            Files.writeString(Paths.get(TEST_FILE_PATH), "");
             // Pre-populate with some tasks
-            Commands.ADD.execute(filePath, "task1", null);
-            Commands.ADD.execute(filePath, "task2", null);
-            Commands.ADD.execute(filePath, "task3", null);
+            Commands.ADD.execute(TEST_FILE_PATH, "task1", null);
+            Commands.ADD.execute(TEST_FILE_PATH, "task2", null);
+            Commands.ADD.execute(TEST_FILE_PATH, "task3", null);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -34,64 +35,48 @@ public class ListCommandTest {
 
     @Test
     public void testListAllTasks() {
-        String filePath = "src/test/resources/input/tasks.json";
-
-        TaskMap taskMap = new TaskMap(filePath);
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
         List<Task> allTasks = taskMap.listAllTasks();
-        Assertions.assertEquals(3, allTasks.size());
+        
+        assertEquals(3, allTasks.size());
     }
 
     @Test
     public void testListUpdatedTaskList() {
-        String filePath = "src/test/resources/input/tasks.json";
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        assertEquals(3, taskMap.listAllTasks().size());
 
-        TaskMap taskMap = new TaskMap(filePath);
-        List<Task> allTasks = taskMap.listAllTasks();
-        Assertions.assertEquals(3, allTasks.size());
-
-        Commands.DELETE.execute(filePath, "2", null);
-        taskMap = new TaskMap(filePath);
-        allTasks = taskMap.listAllTasks();
-        Assertions.assertEquals(2, allTasks.size());
+        Commands.DELETE.execute(TEST_FILE_PATH, "2", null);
+        
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        assertEquals(2, taskMap.listAllTasks().size());
     }
 
     @Test
     public void testListTasksByStatus() {
-        String filePath = "src/test/resources/input/tasks.json";
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        assertEquals(3, taskMap.listTasksByStatus(Status.TODO).size());
 
-        TaskMap taskMap = new TaskMap(filePath);
-        List<Task> todoTasks = taskMap.listTasksByStatus(Status.TODO);
-        Assertions.assertEquals(3, todoTasks.size());
+        Commands.MARK_DONE.execute(TEST_FILE_PATH, "3", null);
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        assertEquals(2, taskMap.listTasksByStatus(Status.TODO).size());
+        assertEquals(1, taskMap.listTasksByStatus(Status.DONE).size());
 
-        Commands.MARK_DONE.execute(filePath, "3", null);
-        taskMap = new TaskMap(filePath);
-        todoTasks = taskMap.listTasksByStatus(Status.TODO);
-        List<Task> doneTasks = taskMap.listTasksByStatus(Status.DONE);
-        Assertions.assertEquals(2, todoTasks.size());
-        Assertions.assertEquals(1, doneTasks.size());
+        Commands.MARK_IN_PROGRESS.execute(TEST_FILE_PATH, "2", null);
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        assertEquals(1, taskMap.listTasksByStatus(Status.TODO).size());
+        assertEquals(1, taskMap.listTasksByStatus(Status.DONE).size());
+        assertEquals(1, taskMap.listTasksByStatus(Status.IN_PROGRESS).size());
 
-        Commands.MARK_IN_PROGRESS.execute(filePath, "2", null);
-        taskMap = new TaskMap(filePath);
-        todoTasks = taskMap.listTasksByStatus(Status.TODO);
-        doneTasks = taskMap.listTasksByStatus(Status.DONE);
-        List<Task> inProgressTasks = taskMap.listTasksByStatus(Status.IN_PROGRESS);
-        Assertions.assertEquals(1, todoTasks.size());
-        Assertions.assertEquals(1, doneTasks.size());
-        Assertions.assertEquals(1, inProgressTasks.size());
-
-        Commands.MARK_DONE.execute(filePath, "1", null);
-        taskMap = new TaskMap(filePath);
-        todoTasks = taskMap.listTasksByStatus(Status.TODO);
-        Assertions.assertEquals(0, todoTasks.size());
+        Commands.MARK_DONE.execute(TEST_FILE_PATH, "1", null);
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        assertEquals(0, taskMap.listTasksByStatus(Status.TODO).size());
     }
 
     @Test
     public void testListWithInvalidStatus() {
-        String filePath = "src/test/resources/input/tasks.json";
-
-        Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> {
-            Commands.LIST.execute(filePath, "INVALID_STATUS", null);
+        assertThrowsExactly(IllegalArgumentException.class, () -> {
+            Commands.LIST.execute(TEST_FILE_PATH, "INVALID_STATUS", null);
         });
     }
-    
 }

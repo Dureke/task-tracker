@@ -1,27 +1,28 @@
 package util;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import tracker.util.Task;
 import tracker.util.Commands;
+import tracker.util.Task;
 import tracker.util.TaskMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DeleteCommandTest {
     static final String TEST_FILE_PATH = "src/test/resources/input/tasks.json";
 
     @BeforeEach
     void setup() {
-        String filePath = TEST_FILE_PATH;
         Task.resetIdCounter();
         try {
-            Files.writeString(Paths.get(filePath), "");
+            Files.writeString(Paths.get(TEST_FILE_PATH), "");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -29,32 +30,20 @@ public class DeleteCommandTest {
 
     @Test
     void testDeleteCommand() {
-        String taskDescription = "Task to be deleted";
-        TaskMap tempMap = new TaskMap(TEST_FILE_PATH);
-        Map<Integer, Task> tempTasks = tempMap.getCurrentTasks();
-        System.out.println("Current Tasks before deletion: " + tempTasks);
-        Commands.ADD.execute(TEST_FILE_PATH, taskDescription, null);
-
-        TaskMap tempMap2 = new TaskMap(TEST_FILE_PATH);
-        tempTasks = tempMap2.getCurrentTasks();
-        System.out.println("Current Tasks after addition: " + tempTasks);
+        Commands.ADD.execute(TEST_FILE_PATH, "Task to be deleted", null);
         Commands.DELETE.execute(TEST_FILE_PATH, "1", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
-        Map<Integer, Task> currentTasks = taskMap.getCurrentTasks();
-        System.out.println("Current Tasks after deletion: " + currentTasks);
         assertTrue(taskMap.getCurrentTasks().isEmpty());
     }
 
     @Test
     void testDeleteNonExistentTask() {
-        String taskDescription = "Task to be deleted";
-
-        Commands.ADD.execute(TEST_FILE_PATH, taskDescription, null);
+        Commands.ADD.execute(TEST_FILE_PATH, "Task to be deleted", null);
         Commands.DELETE.execute(TEST_FILE_PATH, "999", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
-        assertTrue(taskMap.getCurrentTasks().size() == 1);
+        assertEquals(1, taskMap.getCurrentTasks().size());
     }
 
     @Test
@@ -67,13 +56,11 @@ public class DeleteCommandTest {
 
     @Test
     void testDeleteWithInvalidId() {
-        String taskDescription = "Task to be deleted";
-
-        Commands.ADD.execute(TEST_FILE_PATH, taskDescription, null);
+        Commands.ADD.execute(TEST_FILE_PATH, "Task to be deleted", null);
         Commands.DELETE.execute(TEST_FILE_PATH, "invalid_id", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
-        assertTrue(taskMap.getCurrentTasks().size() == 1);
+        assertEquals(1, taskMap.getCurrentTasks().size());
     }
 
     @Test
@@ -81,11 +68,10 @@ public class DeleteCommandTest {
         Commands.ADD.execute(TEST_FILE_PATH, "Task 1", null);
         Commands.ADD.execute(TEST_FILE_PATH, "Task 2", null);
         Commands.ADD.execute(TEST_FILE_PATH, "Task 3", null);
-
         Commands.DELETE.execute(TEST_FILE_PATH, "2", null);
 
         TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
-        assertTrue(taskMap.getCurrentTasks().size() == 2);
-        assertTrue(!taskMap.getCurrentTasks().containsKey(2));
+        assertEquals(2, taskMap.getCurrentTasks().size());
+        assertFalse(taskMap.getCurrentTasks().containsKey(2));
     }
 }

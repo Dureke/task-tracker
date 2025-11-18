@@ -1,15 +1,17 @@
+
 package util;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 import tracker.util.Status;
 import tracker.util.Task;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TaskTest {
 
