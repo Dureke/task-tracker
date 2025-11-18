@@ -8,7 +8,6 @@ public enum Commands {
             Task task = new Task(description);
             TaskMap taskMap = new TaskMap(fileName);
             taskMap.addTask(task);
-            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     UPDATE {
@@ -16,9 +15,7 @@ public enum Commands {
         public void execute(String fileName, String id, String newDescription) {
             System.out.println("Executing UPDATE command on file: " + fileName);
             TaskMap taskMap = new TaskMap(fileName);
-            taskMap.updateTask(id, newDescription);
-            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
-        }
+            taskMap.updateTask(id, newDescription);        }
     },
     DELETE {
         @Override
@@ -27,7 +24,6 @@ public enum Commands {
             TaskMap taskMap = new TaskMap(fileName);
 
             taskMap.removeTask(id);
-            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     MARK_IN_PROGRESS {
@@ -36,7 +32,6 @@ public enum Commands {
             System.out.println("Executing MARK_IN_PROGRESS command on file: " + fileName);
             TaskMap taskMap = new TaskMap(fileName);
             taskMap.markTaskAsInProgress(id);
-            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     MARK_DONE {
@@ -45,7 +40,6 @@ public enum Commands {
             System.out.println("Executing MARK_DONE command on file: " + fileName);
             TaskMap taskMap = new TaskMap(fileName);
             taskMap.markTaskAsDone(id);
-            taskMap.getTaskFile().save(taskMap.getCurrentTasks());
         }
     },
     LIST {

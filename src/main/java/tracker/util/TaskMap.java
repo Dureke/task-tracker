@@ -31,11 +31,13 @@ public class TaskMap {
             return; // Do not add tasks with empty descriptions
         }
         currentTasks.put(task.getId(), task);
+        this.taskFile.save(currentTasks);
     }
 
     public void removeTask(String id) {
         if (isValidId(id)) {
             currentTasks.remove(Integer.parseInt(id));
+            this.taskFile.save(currentTasks);
         }
     }
 
@@ -45,9 +47,9 @@ public class TaskMap {
             if (task != null) {
                 task.setDescription(newDescription);
                 currentTasks.put(task.getId(), task);
+                this.taskFile.save(currentTasks);
             }
         }
-        
     }
 
     public void markTaskAsDone(String id) {
@@ -56,9 +58,9 @@ public class TaskMap {
             if (task != null) {
                 task.setStatus(Status.DONE);
                 currentTasks.put(task.getId(), task);
+                this.taskFile.save(currentTasks);
             }
         }
-        
     }
 
     public void markTaskAsInProgress(String id) {
@@ -67,6 +69,7 @@ public class TaskMap {
             if (task != null) {
                 task.setStatus(Status.IN_PROGRESS);
                 currentTasks.put(task.getId(), task);
+                this.taskFile.save(currentTasks);
             }
         }
     }
