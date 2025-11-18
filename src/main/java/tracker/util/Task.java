@@ -11,41 +11,8 @@ public class Task {
     private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private static final String ID_COUNTER_FILE = "src/main/resources/id_counter.txt";
     private static int idCounter = retrieveIdCounter();
-    private final static String ID_COUNTER_FILE = "src/main/resources/id_counter.txt";
-
-    static private int retrieveIdCounter() {
-        try {
-            if (!Files.exists(Paths.get(ID_COUNTER_FILE))) {
-                Files.createFile(Paths.get(ID_COUNTER_FILE));
-                Files.writeString(Paths.get(ID_COUNTER_FILE), "0");
-                return 1;
-            }
-            return Integer.parseInt(Files.readString(Paths.get(ID_COUNTER_FILE)));
-        } catch (IOException e) {
-            System.out.println("Failed to read id_counter.txt file: " + e.getMessage());
-        }
-        return idCounter;
-    }
-
-    static private void saveIdCounter(int counter) {
-        try {
-            Files.writeString(Paths.get(ID_COUNTER_FILE), Integer.toString(counter));
-        } catch (IOException e) {
-            System.out.println("Failed to write to id_counter.txt file: " + e.getMessage());
-        }
-    }
-
-    static private int incrementIdCounter() {
-        int currentID = retrieveIdCounter();
-        int newCounter = currentID + 1;
-        try {
-            Files.writeString(Paths.get(ID_COUNTER_FILE), Integer.toString(newCounter));
-        } catch (IOException e) {
-            System.out.println("Failed to write to id_counter.txt file: " + e.getMessage());
-        }
-        return newCounter;
-    }
 
     public Task() {
         this.uuid = incrementIdCounter();
@@ -67,44 +34,59 @@ public class Task {
         this.updatedAt = updatedAt;
     }
 
+    public int getId() { return uuid; }
+    public String getDescription() { return description; }
+    public Status getStatus() { return status; } 
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public void setStatus(Status status) {
+        this.status = status;
+        updatedAt = LocalDateTime.now();
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+        updatedAt = LocalDateTime.now();
+    }
+    private static int retrieveIdCounter() {
+        try {
+            if (!Files.exists(Paths.get(ID_COUNTER_FILE))) {
+                Files.createFile(Paths.get(ID_COUNTER_FILE));
+                Files.writeString(Paths.get(ID_COUNTER_FILE), "0");
+                return 0;
+            }
+            return Integer.parseInt(Files.readString(Paths.get(ID_COUNTER_FILE)));
+        } catch (IOException e) {
+            System.out.println("Failed to read id_counter.txt file: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    private static void saveIdCounter(int counter) {
+        try {
+            Files.writeString(Paths.get(ID_COUNTER_FILE), String.valueOf(counter));
+        } catch (IOException e) {
+            System.out.println("Failed to write to id_counter.txt file: " + e.getMessage());
+        }
+    }
+
+    private static int incrementIdCounter() {
+        int newCounter = idCounter + 1;
+        saveIdCounter(newCounter);
+        idCounter = newCounter;
+        return newCounter;
+    }
+
     public static void resetIdCounter() {
         saveIdCounter(0);
         idCounter = 0;
     }
 
-    public int getId() {
-        return this.uuid;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public Status getStatus() {
-        return this.status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-        this.updatedAt = LocalDateTime.now();
-    }
-
+    @Override
     public String toString() {
         return "Task{" +
-                "id='" + uuid + '\'' +
+                "id=" + uuid +
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", createdAt=" + createdAt +
@@ -114,7 +96,7 @@ public class Task {
 
     public String toJSON() {
         return "{" +
-                "\"id\":\"" + uuid + "\"," +
+                "\"id\":" + uuid + "," +
                 "\"description\":\"" + description + "\"," +
                 "\"status\":\"" + status + "\"," +
                 "\"createdAt\":\"" + createdAt + "\"," +

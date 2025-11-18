@@ -5,10 +5,6 @@ import java.io.Writer;
 import java.util.Map;
 
 public class TaskFile {
-    // Controls the reading and writing of tasks to a file
-    // TODO: add JSON to Map and Map to JSON methods
-    // TODO: add a save method
-
     private final String path;
     private Reader reader;
     private Writer writer;
@@ -17,21 +13,15 @@ public class TaskFile {
         this.path = filePath;
     }
 
-    public String getPath() {
-        return path;
-    }
+    public String getPath() { return path; }
 
     private Reader getReader() throws Exception {
-        if (reader == null) {
-            reader = new java.io.FileReader(path);
-        }
+        this.reader = reader == null ? new java.io.FileReader(this.path) : reader;
         return reader;
     }
 
     private Writer getWriter() throws Exception {
-        if (writer == null) {
-            writer = new java.io.FileWriter(path, false);
-        }
+        this.writer = writer == null ? new java.io.FileWriter(this.path, false) : writer;
         return writer;
     }
 

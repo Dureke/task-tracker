@@ -73,9 +73,7 @@ public enum Commands {
         this.command = name().toLowerCase();
     }
 
-    public String getCommand() {
-        return command;
-    }
+    public String getCommand() { return command; }
 
     public static Commands fromString(String input) {
         if (input == null) {

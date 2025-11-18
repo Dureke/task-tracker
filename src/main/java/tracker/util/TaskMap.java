@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TaskMap {
-    // Manages the in-memory representation of tasks
-    // TODO: add methods to manipulate the task list
-
     private Map<Integer, Task> currentTasks;
     private TaskFile taskFile;
 
@@ -18,17 +15,12 @@ public class TaskMap {
         this.currentTasks = taskFile.JSONtoMap();
     }
 
-    public Map<Integer, Task> getCurrentTasks() {
-        return currentTasks;
-    }
-
-    public TaskFile getTaskFile() {
-        return taskFile;
-    }
+    public Map<Integer, Task> getCurrentTasks() { return currentTasks; }
+    public TaskFile getTaskFile() { return taskFile; } 
 
     public void addTask(Task task) {
         if (task.getDescription() == null || task.getDescription().trim().isEmpty()) {
-            return; // Do not add tasks with empty descriptions
+            return;
         }
         currentTasks.put(task.getId(), task);
         this.taskFile.save(currentTasks);
