@@ -15,7 +15,8 @@ public enum Commands {
         public void execute(String fileName, String id, String newDescription) {
             System.out.println("Executing UPDATE command on file: " + fileName);
             TaskMap taskMap = new TaskMap(fileName);
-            taskMap.updateTask(id, newDescription);        }
+            taskMap.updateTask(id, newDescription);
+        }
     },
     DELETE {
         @Override
@@ -80,7 +81,6 @@ public enum Commands {
             throw new IllegalArgumentException("Command cannot be null.");
         }
 
-        // normalize user input
         String normalized = input
                 .trim()
                 .toUpperCase()

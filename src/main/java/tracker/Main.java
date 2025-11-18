@@ -14,7 +14,7 @@ public class Main {
             return;
         }
         
-        final Commands COMMAND = Commands.fromString(args[0].toUpperCase());
+        final Commands COMMAND = Commands.fromString(args[0]);
         final String FILE_NAME = "src/main/resources/tasks.json";
         final String ARG_1 = args.length > 1 ? args[1] : null;
         final String ARG_2 = args.length > 2 ? args[2] : null;
@@ -29,8 +29,7 @@ public class Main {
             } else if (COMMAND == Commands.UPDATE) {
                 String description = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
                 COMMAND.execute(FILE_NAME, ARG_1, description);
-            }
-            else {
+            } else {
                 COMMAND.execute(FILE_NAME, ARG_1, ARG_2);
             }
 

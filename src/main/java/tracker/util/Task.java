@@ -72,10 +72,9 @@ public class Task {
     }
 
     private static int incrementIdCounter() {
-        int newCounter = idCounter + 1;
-        saveIdCounter(newCounter);
-        idCounter = newCounter;
-        return newCounter;
+        idCounter = idCounter + 1;
+        saveIdCounter(idCounter);
+        return idCounter;
     }
 
     public static void resetIdCounter() {
