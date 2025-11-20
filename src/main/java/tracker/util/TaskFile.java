@@ -53,9 +53,15 @@ public class TaskFile {
 
     public String MaptoJSON(Map<Integer, Task> tasks) {
         StringBuilder sb = new StringBuilder();
+        sb.append("{\"tasks\":[\r\n");
         for (Task task : tasks.values()) {
-            sb.append(task.toJSON()).append("\r\n");
+            sb.append(task.toJSON()).append(",\r\n");
         }
+        if (!tasks.isEmpty()) {
+            sb.setLength(sb.length() - 3); // Remove the last comma and newline
+            sb.append("\r\n");
+        }
+        sb.append("]}");
         return sb.toString();
     }
 

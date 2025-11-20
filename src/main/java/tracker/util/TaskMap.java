@@ -82,35 +82,33 @@ public class TaskMap {
 
     public static Map<Integer, Task> fromJSON(String json) {
         Map<Integer, Task> taskMap = new HashMap<>();
+        String emptyJSON = "{\"tasks\":[]}";
 
-        if (json.equals("{}") || json.trim().isEmpty()) {
+        if (json.equals(emptyJSON) || json.trim().isEmpty()) {
             return taskMap;
         }
 
-        String[] entries = json.split("\\{");
+        String tasksArrayString = json.substring(json.indexOf("[") + 1, json.lastIndexOf("]"));
+        String[] entries = tasksArrayString.split("\\{");
         for (String entry : entries) {
             if (entry.trim().isEmpty() || entry.equals("}")) {
                 continue;
             }
 
             String[] lines = entry.split(",");
-            int id = Integer.parseInt(lines[0].split(":")[1].trim().replaceAll("\"", ""));
-            String description = lines[1].split(":")[1].trim().replaceAll("\"", "");
-            Status status;
-            try {
-                status = Status.valueOf(lines[2].split(":")[1].trim().replaceAll("\"", "").toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Invalid status value: " + lines[2].split(":")[1].trim().replaceAll("\"", ""), e);
-            }
+            String idAsString = lines[0].split("\"id\":")[1].trim().replaceAll("\"", "");
+            String description = lines[1].split("\"description\":")[1].trim().replaceAll("\"", "");
+            String statusAsString = lines[2].split("\"status\":")[1].trim().replaceAll("\"", "");
+            String createdAtAsString = lines[3].split("\"createdAt\":")[1].trim().replaceAll("\"", "");
+            String updatedAtAsString = lines[4].split("\"updatedAt\":")[1].trim().replaceAll("[\"}]", "");
+            
+            int id = Integer.parseInt(idAsString);
+            Status status = Status.valueOf(statusAsString.toUpperCase());
+            LocalDateTime createdAt = LocalDateTime.parse(createdAtAsString);
+            LocalDateTime updatedAt = LocalDateTime.parse(updatedAtAsString);
 
-            LocalDateTime createdAt = LocalDateTime.parse(lines[3].split(":")[1].trim().replaceAll("\"", "")
-                    + ":" + lines[3].split(":")[2].trim().replaceAll("\"", "")
-                    + ":" + lines[3].split(":")[3].trim().replaceAll("\"", ""));
-            LocalDateTime updatedAt = LocalDateTime.parse(lines[4].split(":")[1].trim().replaceAll("\"", "")
-                    + ":" + lines[4].split(":")[2].trim().replaceAll("\"", "")
-                    + ":" + lines[4].split(":")[3].substring(0, 2).trim().replaceAll("\"", ""));
             Task task = new Task(id, description, status, createdAt, updatedAt);
-            taskMap.put(task.getId(), task);
+            taskMap.put(id, task);
         }
         return taskMap;
     }

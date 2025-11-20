@@ -36,8 +36,8 @@ class TaskMapTest {
 
     @Test
     void testFromJSON() {
-        String json = "{\"id\":1,\"description\":\"Task 1\",\"status\":\"TODO\",\"createdAt\":\"2022-01-01T00:00:00\",\"updatedAt\":\"2022-01-01T00:00:00\"}\r\n" + //
-            "{\"id\":2,\"description\":\"Task 2\",\"status\":\"IN_PROGRESS\",\"createdAt\":\"2022-01-02T00:00:00\",\"updatedAt\":\"2022-01-02T00:00:00\"}\r\n";
+        String json = "\"tasks\":[{\"id\":1,\"description\":\"Task 1\",\"status\":\"TODO\",\"createdAt\":\"2022-01-01T00:00:00\",\"updatedAt\":\"2022-01-01T00:00:00\"},\r\n" + //
+            "{\"id\":2,\"description\":\"Task 2\",\"status\":\"IN_PROGRESS\",\"createdAt\":\"2022-01-02T00:00:00\",\"updatedAt\":\"2022-01-02T00:00:00\"}\r\n]";
 
         Map<Integer, Task> taskMap = TaskMap.fromJSON(json);
 
@@ -60,9 +60,11 @@ class TaskMapTest {
 
     @Test
     void testFromJSONEmpty() {
-        String json = "{}";
+        String json = "";
+        String emptyJSON = "{\"tasks\":[]}";
 
         assertEquals(0, TaskMap.fromJSON(json).size());
+        assertEquals(0, TaskMap.fromJSON(emptyJSON).size());
     }
 
     @Test
@@ -105,12 +107,12 @@ class TaskMapTest {
 
     @Test
     void testFromJSONInvalidJSON() {
-        String json = "{\"id\":1,\"description\":\"Task 1\",\"status\":\"TODO\",\"createdAt\":\"2022-01-01T00:00:00\",\"updatedAt\":\"2022-01-01T00:00:00\"}\r\n" + //
+        String json = "\"tasks\":[{\"id\":1,\"description\":\"Task 1\",\"status\":\"TODO\",\"createdAt\":\"2022-01-01T00:00:00\",\"updatedAt\":\"2022-01-01T00:00:00\"},\r\n" + //
             "{\"id\":2,\"description\":\"Task 2\",\"status\":\"IN_PROGRESS\",\"createdAt\":\"2022-01-02T00:00:00\",\"updatedAt\":\"2022-01-02T00:00:00\"}\r\n" + //
-            "{\"id\":3,\"description\":\"Task 3\",\"status\":\"DONE\",\"createdAt\":\"2022-01-03T00:00:00\",\"updatedAt\":\"2022-01-03T00:00:00\"}\r\n";
+            "{\"id\":3,\"description\":\"Task 3\",\"status\":\"DONE\",\"createdAt\":\"2022-01-03T00:00:00\",\"updatedAt\":\"2022-01-03T00:00:00\"}\r\n]";
 
         assertThrows(IllegalArgumentException.class, () -> {
-            TaskMap.fromJSON(json + "{\"id\":4,\"description\":\"Task 4\",\"status\":\"INVALID\",\"createdAt\":\"2022-01-04T00:00:00\",\"updatedAt\":\"2022-01-04T00:00:00\"}");
+            TaskMap.fromJSON(json.substring(0, json.length() - 1) + ",{\"id\":4,\"description\":\"Task 4\",\"status\":\"INVALID\",\"createdAt\":\"2022-01-04T00:00:00\",\"updatedAt\":\"2022-01-04T00:00:00\"}]");
         });
     }
 
