@@ -9,14 +9,31 @@ import java.util.List;
 public class TaskMap {
     private Map<Integer, Task> currentTasks;
     private TaskFile taskFile;
+    private int nextId;
 
     public TaskMap(String fileName) {
         this.taskFile = new TaskFile(fileName);
         this.currentTasks = taskFile.JSONtoMap();
+        this.nextId = setNextId();
     }
 
     public Map<Integer, Task> getCurrentTasks() { return currentTasks; }
     public TaskFile getTaskFile() { return taskFile; } 
+    public int getNextId() { return nextId; }
+
+    private int setNextId() {
+        int nextID = 1;
+        if (currentTasks == null || currentTasks.isEmpty()) {
+            return nextID;
+        } else {
+            for (Task task : currentTasks.values()) {
+                if (task.getId() >= nextID) {
+                    nextID = task.getId() + 1;
+                }
+            }
+        }
+        return nextID;
+    }
 
     public void addTask(Task task) {
         if (task.getDescription() == null || task.getDescription().trim().isEmpty()) {
@@ -96,6 +113,7 @@ public class TaskMap {
             }
 
             String[] lines = entry.split(",");
+
             String idAsString = lines[0].split("\"id\":")[1].trim().replaceAll("\"", "");
             String description = lines[1].split("\"description\":")[1].trim().replaceAll("\"", "");
             String statusAsString = lines[2].split("\"status\":")[1].trim().replaceAll("\"", "");

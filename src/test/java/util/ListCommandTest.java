@@ -21,7 +21,6 @@ public class ListCommandTest {
 
     @BeforeEach
     void setup() {
-        Task.resetIdCounter();
         try {
             Files.writeString(Paths.get(TEST_FILE_PATH), "");
             // Pre-populate with some tasks

@@ -1,9 +1,6 @@
 package tracker.util;
 
 import java.time.LocalDateTime;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.io.IOException;
 
 public class Task {
     private int uuid;
@@ -11,11 +8,9 @@ public class Task {
     private Status status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private static final String ID_COUNTER_FILE = "src/main/resources/id_counter.txt";
-    private static int idCounter = retrieveIdCounter();
 
     public Task() {
-        this.uuid = incrementIdCounter();
+        this.uuid = 1;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -23,6 +18,13 @@ public class Task {
     public Task(String description) {
         this();
         this.description = description;
+        this.status = Status.TODO;
+    }
+
+    public Task(String description, int uuid) {
+        this();
+        this.description = description;
+        this.uuid = uuid;
         this.status = Status.TODO;
     }
 
@@ -48,38 +50,6 @@ public class Task {
     public void setDescription(String description) {
         this.description = description;
         updatedAt = LocalDateTime.now();
-    }
-    private static int retrieveIdCounter() {
-        try {
-            if (!Files.exists(Paths.get(ID_COUNTER_FILE))) {
-                Files.createFile(Paths.get(ID_COUNTER_FILE));
-                Files.writeString(Paths.get(ID_COUNTER_FILE), "0");
-                return 0;
-            }
-            return Integer.parseInt(Files.readString(Paths.get(ID_COUNTER_FILE)));
-        } catch (IOException e) {
-            System.out.println("Failed to read id_counter.txt file: " + e.getMessage());
-            return 0;
-        }
-    }
-
-    private static void saveIdCounter(int counter) {
-        try {
-            Files.writeString(Paths.get(ID_COUNTER_FILE), String.valueOf(counter));
-        } catch (IOException e) {
-            System.out.println("Failed to write to id_counter.txt file: " + e.getMessage());
-        }
-    }
-
-    private static int incrementIdCounter() {
-        idCounter = idCounter + 1;
-        saveIdCounter(idCounter);
-        return idCounter;
-    }
-
-    public static void resetIdCounter() {
-        saveIdCounter(0);
-        idCounter = 0;
     }
 
     @Override

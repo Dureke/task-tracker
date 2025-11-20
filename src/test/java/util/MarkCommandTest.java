@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 
 import tracker.util.Commands;
 import tracker.util.Status;
-import tracker.util.Task;
 import tracker.util.TaskMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +18,6 @@ public class MarkCommandTest {
 
     @BeforeEach
     void setup() {
-        Task.resetIdCounter();
         try {
             Files.writeString(Paths.get(TEST_FILE_PATH), "");
         } catch (IOException e) {

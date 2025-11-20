@@ -1,7 +1,6 @@
 
 package util;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -15,17 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TaskTest {
 
-    @BeforeAll
-    static void setupOnce() {
-        Task.resetIdCounter();
-    }
-
     @Test
     void testGetId() {
         Task task = new Task();
         assertEquals(1, task.getId());
         
-        task = new Task("Test Task");
+        task = new Task("Test Task", 2);
         assertEquals(2, task.getId());
         
         task = new Task(3, "Test Task", Status.TODO, LocalDateTime.now(), LocalDateTime.now());

@@ -5,8 +5,10 @@ public enum Commands {
         @Override
         public void execute(String fileName, String description, String a) {
             System.out.println("Executing ADD command on file: " + fileName);
-            Task task = new Task(description);
+            
             TaskMap taskMap = new TaskMap(fileName);
+            Task task = new Task(description, taskMap.getNextId());
+
             taskMap.addTask(task);
         }
     },
@@ -15,6 +17,7 @@ public enum Commands {
         public void execute(String fileName, String id, String newDescription) {
             System.out.println("Executing UPDATE command on file: " + fileName);
             TaskMap taskMap = new TaskMap(fileName);
+
             taskMap.updateTask(id, newDescription);
         }
     },
@@ -32,6 +35,7 @@ public enum Commands {
         public void execute(String fileName, String id, String a) {
             System.out.println("Executing MARK_IN_PROGRESS command on file: " + fileName);
             TaskMap taskMap = new TaskMap(fileName);
+
             taskMap.markTaskAsInProgress(id);
         }
     },
@@ -40,6 +44,7 @@ public enum Commands {
         public void execute(String fileName, String id, String a) {
             System.out.println("Executing MARK_DONE command on file: " + fileName);
             TaskMap taskMap = new TaskMap(fileName);
+            
             taskMap.markTaskAsDone(id);
         }
     },

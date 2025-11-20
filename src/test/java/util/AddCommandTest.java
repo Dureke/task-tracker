@@ -20,7 +20,6 @@ public class AddCommandTest {
 
     @BeforeEach
     void setup() {
-        Task.resetIdCounter();
         try {
             Files.writeString(Paths.get(TEST_FILE_PATH), "");
         } catch (IOException e) {

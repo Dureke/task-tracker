@@ -20,7 +20,6 @@ public class DeleteCommandTest {
 
     @BeforeEach
     void setup() {
-        Task.resetIdCounter();
         try {
             Files.writeString(Paths.get(TEST_FILE_PATH), "");
         } catch (IOException e) {
@@ -66,11 +65,26 @@ public class DeleteCommandTest {
     @Test
     void testDeleteFromListOfTasks() {
         Commands.ADD.execute(TEST_FILE_PATH, "Task 1", null);
+        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        for (Task task : taskMap.getCurrentTasks().values()) {
+            System.out.println("Task: " + task.toString());
+        }
         Commands.ADD.execute(TEST_FILE_PATH, "Task 2", null);
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        for (Task task : taskMap.getCurrentTasks().values()) {
+            System.out.println("Task: " + task.toString());
+        }
         Commands.ADD.execute(TEST_FILE_PATH, "Task 3", null);
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        for (Task task : taskMap.getCurrentTasks().values()) {
+            System.out.println("Task: " + task.toString());
+        }
         Commands.DELETE.execute(TEST_FILE_PATH, "2", null);
 
-        TaskMap taskMap = new TaskMap(TEST_FILE_PATH);
+        taskMap = new TaskMap(TEST_FILE_PATH);
+        for (Task task : taskMap.getCurrentTasks().values()) {
+            System.out.println("Task: " + task.toString());
+        }
         assertEquals(2, taskMap.getCurrentTasks().size());
         assertFalse(taskMap.getCurrentTasks().containsKey(2));
     }
